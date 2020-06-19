@@ -16,5 +16,10 @@ class SearchTests(unittest.TestCase):
             search(VALIDPKG, '1.0', 'badmode')
 
 
+    def test_package_invalid_raise(self):
+        # Ensure package is a valid value
+        with self.assertRaisesRegex(ValueError, 'Unknown package: "foobarfoo"'):
+            search('foobarfoo', '1.0')
+
 if __name__ == '__main__':
     unittest.main()
