@@ -21,5 +21,14 @@ class SearchTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Unknown package: "foobarfoo"'):
             search('foobarfoo', '1.0')
 
+
+    def test_version_invalid_raise(self):
+        # Ensure it's a non-empty string
+        with self.assertRaisesRegex(ValueError, 'Version cannot be empty'):
+            search(VALIDPKG, '')
+        with self.assertRaisesRegex(ValueError, 'Version cannot be empty'):
+            search(VALIDPKG, '\t  ')
+
+
 if __name__ == '__main__':
     unittest.main()
