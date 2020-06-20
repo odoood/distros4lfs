@@ -32,3 +32,7 @@ def search(package, version, mode='eq'):
     if package not in PACKAGE_DICT:
         raise ValueError('Unknown package: "%s"' % package)
 
+    version = version.strip()
+
+    if not version:
+        raise ValueError('Version cannot be empty')
