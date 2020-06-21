@@ -15,6 +15,8 @@ SCRIPTDIR = Path(sys.argv[0]).parent
 if not SCRIPTDIR.is_absolute():
     SCRIPTDIR = SCRIPTDIR.resolve()
 
+DUMMY_FILE_DIR = SCRIPTDIR / 'dummy_files'
+
 VALIDPKG = 'linux'
 
 # Context manager method for setting the SEARCH_URL_FORM in target module
@@ -58,6 +60,17 @@ class SearchTests(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'Error sending search request'):
             with url_context(url):
                 search(VALIDPKG, '1.0')
+
+
+    def test_parsing_fails_raise(self):
+        # If request succeeds but parsing the html data fails show error for it
+        # Use url format context for request to force load dummy file
+        url = (DUMMY_FILE_DIR / 'badhtml.html').as_uri()
+
+        with self.assertRaisesRegex(Exception, 'Error parsing search response'):
+            with url_context(url):
+                search(VALIDPKG, '1.0')
+
 
 
 if __name__ == '__main__':
