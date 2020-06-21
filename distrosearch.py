@@ -44,7 +44,7 @@ def search(package, version, mode='eq'):
     url = SEARCH_URL_FORMAT.format(pkg=package, ver=version, mode=mode)
     charset, data = None, None
 
-    parser = html5lib.HTMLParser(strict=True)
+    parser = html5lib.HTMLParser(strict=True, namespaceHTMLElements=False)
 
     # Send the request and get the response data for search results
     try:
@@ -60,5 +60,8 @@ def search(package, version, mode='eq'):
 
     # Use the XPath to get the list of distro names from the parsed data
     distros = []
+
+    elems = data.findall(RESULTS_XPATH)
+    distros = [e.text.strip() for e in elems]
 
     return distros
