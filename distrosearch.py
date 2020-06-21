@@ -57,3 +57,8 @@ def search(package, version, mode='eq'):
         # ParseError should be raised for badly formed html since parser will be
         # set to strict mode
         raise Exception('Error parsing search response for url "%s"' % url)
+
+    # Use the XPath to get the list of distro names from the parsed data
+    distros = []
+
+    return distros
