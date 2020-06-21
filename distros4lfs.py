@@ -1,23 +1,40 @@
-# From a text list of distros (compiled from distrowatch.com search for distros
-# by package) get the set of distros that fulfill the LFS host system reqs
+# Use distrowatch module to compile list of distros that fulfill the LFS host
+# system package reqirements
+import distrosearch
 from pathlib import Path
 import sys
 
-filedir = Path(sys.argv[0]).parent
-distro_file = filedir / 'distros4lfs.txt'
+filedir = Path(sys.argv[0]).parent.resolve()
+LFSPKG_FILE = filedir / 'lfspkglist.txt'
+DISTRO_FILE = filedir / 'distrolist.txt'
+
+if not LFSPKG_FILE.exists():
+    print('Package list file missing: "%s"' % LFSPKG_FILE)
+    exit(1)
+
 package_map = {}
 
-# Read all the lines in the list - the format should be:
-# PackageName\t[list of distros with tab delim]
-with open(distro_file) as df:
+# Read all the lines in the package list - the format should be:
+# PackageName   PackageVersion  SearchMode
+# With SearchMode value according to accepted distrosearch.search mode arg
+package_list = []
 
-    # Add the list of distros to the package map with the package as key
-    for pkg in df:
+with open(LFSPKG_FILE) as pf:
+    for pkg in pf:
+        package_list.append(pkg.strip().split())
 
-        line = pkg.strip().split('\t')
-        package_map[line[0]] = set(line[1:])
+print('List of packages to search for:')
+print('\n'.join([pkg[0] + ' ' + pkg[2] for pkg in package_list]))
 
-print('Packages (and number of qualifying distros):')
+# Do the search for all packages and add the list of results to the map
+print('\nPerforming package searches...\n')
+
+for (name, mode, version) in package_list:
+    print('Searching for distros with "%s %s"...' % (name, version))
+    key = '%s (%s %s)' % (name, mode, version)
+    package_map[key] = distrosearch.search(name, version, mode)
+
+print('\nPackages (and number of qualifying distros):\n')
 
 for pkg in sorted(package_map.keys()):
     print('{: <20}: {}'.format(pkg, len(package_map[pkg])))
@@ -29,9 +46,7 @@ distro_sets = list(filter(None, package_map.values()))
 
 # Check each distro in each list and ensure it's in all the other lists
 for distro_set in distro_sets:
-
     for distro in distro_set:
-
         if distro in good_distros or distro in bad_distros:
             continue
 
@@ -43,13 +58,19 @@ for distro_set in distro_sets:
         else:
             good_distros.add(distro)
 
-# Print out the good distros for LFS host systems
-print()
-print('Host system candidates (caveat: need to be checked for the packages -> {}):'
-      .format(', '.join([p for p in package_map if not package_map[p]])))
+# Print out the good distros for LFS host systems if any
+if len(good_distros) == 0:
+    print('\nNo candidates found.')
+    exit(0)
 
-for d in sorted(good_distros):
-    print(d)
+print('\nHost system candidates:\n%s\n' % '\n'.join(sorted(good_distros)))
 
-        
-        
+with open(DISTRO_FILE, 'w') as df:
+    df.write('Distros which meet all the following requirements:\n\n')
+
+    for p in package_map:
+        df.write('- %s\n' % p)
+
+    df.write('\n%s' % '\n'.join(sorted(good_distros)))
+
+print('List written to "%s"' % DISTRO_FILE)
