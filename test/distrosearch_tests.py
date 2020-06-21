@@ -3,8 +3,14 @@
 import sys
 sys.path.append('..')
 
+from pathlib import Path
 from distrosearch import search
 import unittest
+
+SCRIPTDIR = Path(sys.argv[0]).parent
+
+if not SCRIPTDIR.is_absolute():
+    SCRIPTDIR = SCRIPTDIR.resolve()
 
 VALIDPKG = 'linux'
 
