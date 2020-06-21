@@ -4,6 +4,7 @@ import sys
 sys.path.append('..')
 
 from pathlib import Path
+import distrosearch
 from distrosearch import search
 import unittest
 
@@ -34,6 +35,18 @@ class SearchTests(unittest.TestCase):
             search(VALIDPKG, '')
         with self.assertRaisesRegex(ValueError, 'Version cannot be empty'):
             search(VALIDPKG, '\t  ')
+
+
+    def test_request_fails_raise(self):
+        # If request to DistroWatch fails show error message indicating that
+        # Set the url format for requests to force failure
+        s = distrosearch.SEARCH_URL_FORMAT
+        distrosearch.SEARCH_URL_FORMAT = (SCRIPTDIR / 'foobar.txt').as_uri()
+
+        with self.assertRaisesRegex(Exception, 'Error sending search request'):
+            search(VALIDPKG, '1.0')
+
+        distrosearch.SEARCH_URL_FORMAT = s
 
 
 if __name__ == '__main__':
