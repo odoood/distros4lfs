@@ -29,6 +29,16 @@ def url_context(url):
     finally:
         distrosearch.SEARCH_URL_FORMAT = s
 
+# Context manager method for setting the RESULTS_XPATH in module
+@contextmanager
+def xpath_context(path):
+    p = distrosearch.RESULTS_XPATH
+    distrosearch.RESULTS_XPATH = path
+    try:
+        yield
+    finally:
+        distrosearch.RESULTS_XPATH = p
+
 
 class SearchTests(unittest.TestCase):
 
@@ -73,6 +83,13 @@ class SearchTests(unittest.TestCase):
             with url_context(url):
                 search(VALIDPKG, '1.0')
 
+
+    def test_no_search_results_return_empty_list(self):
+        url = (DUMMY_FILE_DIR / 'noresults.html').as_uri()
+
+        with url_context(url), xpath_context(''):
+            result = search(VALIDPKG, '1.0')
+            self.assertEqual([], result)
 
 
 if __name__ == '__main__':

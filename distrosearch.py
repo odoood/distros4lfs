@@ -11,8 +11,8 @@ import html5lib
 # Keep dict of lowercase package names
 PACKAGE_DICT = {p.strip().lower(): p for p in PACKAGES}
 SEARCH_MODES = ('eq', 'like', 'gt', 'ge', 'lt', 'le')
-SEARCH_URL_FORMAT = None
-
+SEARCH_URL_FORMAT = ''
+RESULTS_XPATH = ''
 
 def search(package, version, mode='eq'):
     '''Perform a DistroWatch Package Search with given search mode.
