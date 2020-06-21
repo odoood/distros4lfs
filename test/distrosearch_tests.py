@@ -101,5 +101,15 @@ class SearchTests(unittest.TestCase):
             self.assertEqual(['The Only One'], result)
 
 
+    def test_three_results_return_list_of_three(self):
+        url = (DUMMY_FILE_DIR / 'threeresults.html').as_uri()
+        xp = "./body/div[@id='search-results']/ul/li"
+        expected = ['The First', 'The   2nd: Number Two', 'Third Result']
+
+        with url_context(url), xpath_context(xp):
+            result = search(VALIDPKG, '1.0')
+            self.assertEqual(expected, result)
+
+
 if __name__ == '__main__':
     unittest.main()
