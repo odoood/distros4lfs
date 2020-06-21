@@ -52,8 +52,8 @@ def search(package, version, mode='eq'):
             charset = w.info().get_content_charset()
             data = parser.parse(w, transport_encoding=charset)
     except URLError:
-        raise Exception('Error sending search request')
+        raise Exception('Error sending search request with url "%s"' % url)
     except html5lib.html5parser.ParseError:
         # ParseError should be raised for badly formed html since parser will be
         # set to strict mode
-        raise Exception('Error parsing search response ')
+        raise Exception('Error parsing search response for url "%s"' % url)

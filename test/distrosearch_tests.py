@@ -56,8 +56,9 @@ class SearchTests(unittest.TestCase):
         # If request to DistroWatch fails show error message indicating that
         # Use url format context for requests to force failure
         url = (SCRIPTDIR / 'foobar.txt').as_uri()
+        errormsg = 'Error sending search request with url "%s"' % url
 
-        with self.assertRaisesRegex(Exception, 'Error sending search request'):
+        with self.assertRaisesRegex(Exception, errormsg):
             with url_context(url):
                 search(VALIDPKG, '1.0')
 
@@ -66,8 +67,9 @@ class SearchTests(unittest.TestCase):
         # If request succeeds but parsing the html data fails show error for it
         # Use url format context for request to force load dummy file
         url = (DUMMY_FILE_DIR / 'badhtml.html').as_uri()
+        errormsg = 'Error parsing search response for url "%s"' % url
 
-        with self.assertRaisesRegex(Exception, 'Error parsing search response'):
+        with self.assertRaisesRegex(Exception, errormsg):
             with url_context(url):
                 search(VALIDPKG, '1.0')
 
