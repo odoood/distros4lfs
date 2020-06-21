@@ -6,6 +6,7 @@
 from packages import PACKAGES
 from urllib.error import URLError
 from urllib.request import urlopen
+import html5lib
 
 # Keep dict of lowercase package names
 PACKAGE_DICT = {p.strip().lower(): p for p in PACKAGES}
@@ -41,12 +42,18 @@ def search(package, version, mode='eq'):
         raise ValueError('Version cannot be empty')
 
     url = SEARCH_URL_FORMAT.format(pkg=package, ver=version, mode=mode)
-    data, charset = None, None
+    charset, data = None, None
+
+    parser = html5lib.HTMLParser(strict=True)
 
     # Send the request and get the response data for search results
     try:
         with urlopen(url) as w:
             charset = w.info().get_content_charset()
-            data = w.read()
+            data = parser.parse(w, transport_encoding=charset)
     except URLError:
         raise Exception('Error sending search request')
+    except html5lib.html5parser.ParseError:
+        # ParseError should be raised for badly formed html since parser will be
+        # set to strict mode
+        raise Exception('Error parsing search response ')
