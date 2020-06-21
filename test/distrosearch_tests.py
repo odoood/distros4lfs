@@ -72,7 +72,8 @@ class SearchTests(unittest.TestCase):
             with url_context(url):
                 search(VALIDPKG, '1.0')
 
-
+    # FIXME: need an easy way to force parsing failure without using strict mode
+    @unittest.skip('Cannot fail with strict=False?')
     def test_parsing_fails_raise(self):
         # If request succeeds but parsing the html data fails show error for it
         # Use url format context for request to force load dummy file

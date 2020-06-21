@@ -44,7 +44,11 @@ def search(package, version, mode='eq'):
     url = SEARCH_URL_FORMAT.format(pkg=package, ver=version, mode=mode)
     charset, data = None, None
 
-    parser = html5lib.HTMLParser(strict=True, namespaceHTMLElements=False)
+    # XXX: this would use strict parsing but html5lib doesn't seem to be able to
+    #      handle a DOCTYPE declaration such as:
+    #       <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    #           "http://www.w3.org/TR/html4/loose.dtd">
+    parser = html5lib.HTMLParser(namespaceHTMLElements=False)
 
     # Send the request and get the response data for search results
     try:
