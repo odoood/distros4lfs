@@ -4,6 +4,8 @@
 #
 
 from packages import PACKAGES
+from urllib.error import URLError
+from urllib.request import urlopen
 
 # Keep dict of lowercase package names
 PACKAGE_DICT = {p.strip().lower(): p for p in PACKAGES}
@@ -37,3 +39,14 @@ def search(package, version, mode='eq'):
 
     if not version:
         raise ValueError('Version cannot be empty')
+
+    url = SEARCH_URL_FORMAT.format(pkg=package, ver=version, mode=mode)
+    data, charset = None, None
+
+    # Send the request and get the response data for search results
+    try:
+        with urlopen(url) as w:
+            charset = w.info().get_content_charset()
+            data = w.read()
+    except URLError:
+        raise Exception('Error sending search request')
