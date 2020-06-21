@@ -92,5 +92,14 @@ class SearchTests(unittest.TestCase):
             self.assertEqual([], result)
 
 
+    def test_one_result_return_list_of_one(self):
+        url = (DUMMY_FILE_DIR / 'oneresult.html').as_uri()
+        xp = "./body/div[@id='search-results']/ul/li"
+
+        with url_context(url), xpath_context(xp):
+            result = search(VALIDPKG, '1.0')
+            self.assertEqual(['The Only One'], result)
+
+
 if __name__ == '__main__':
     unittest.main()
