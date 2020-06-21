@@ -10,12 +10,24 @@ import html5lib
 
 # Keep dict of lowercase package names
 PACKAGE_DICT = {p.strip().lower(): p for p in PACKAGES}
-SEARCH_MODES = ('eq', 'like', 'gt', 'ge', 'lt', 'le')
-SEARCH_URL_FORMAT = ''
-RESULTS_XPATH = ''
+
+# Map mode args for search method to url query param name for request
+SEARCH_MODES = {
+    'eq': 'equal',
+    'like': 'similar',
+    'gt': 'greater',
+    'ge': 'greaterequal',
+    'lt': 'less',
+    'le': 'lessequal'
+    }
+SEARCH_URL_FORMAT = 'https://distrowatch.com/search.php?pkg={pkg}&relation=' \
+    '{mode}&pkgver={ver}&distrorange=InLatest'
+RESULTS_XPATH = './body/table[3]/tbody/tr/td[1]/table/tbody/tr[2]/td/table/' \
+    'tbody/tr[4]/td/b/a'
 
 def search(package, version, mode='eq'):
-    '''Perform a DistroWatch Package Search with given search mode.
+    '''Perform a DistroWatch Package Search with given search mode. Searches are
+    done only for the latest release of any distro.
 
     Mode defaults to 'eq' and can be any of:
       - eq (equal to)
@@ -30,6 +42,8 @@ def search(package, version, mode='eq'):
 
     if mode not in SEARCH_MODES:
         raise ValueError('Invalid mode: "%s"' % mode)
+
+    mode = SEARCH_MODES[mode]
 
     package = package.strip().lower()
 
